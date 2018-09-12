@@ -41,27 +41,60 @@
             }
         },
         mounted () {
-            this.items = [
-                { text: 'Primer recordatorio', done: true },
-                { text: 'Segundo recordatorio', done: false },
-                { text: 'Tercero recordatorio', done: false },
-                { text: 'Cuarto recordatorio', done: true },
-                { text: 'Quinto recordatorio', done: false },
-            ]
+           this.listTodo();
         },
         methods: {
+            listTodo(){
+                let list = this;
+                axios.get('/api/todos').then(function (response) {
+                    list.items = response.data;
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                });
+            },
             addTodo () {
-                let text = this.todoItemText.trim()
+                let me = this;
+                let text = me.todoItemText.trim();
+
                 if (text !== '') {
-                    this.items.push({ text: text, done: false })
-                    this.todoItemText = ''
+                    axios.post('/api/todos', {
+                        text: this.todoItemText,
+                        done: false
+                    })
+                    .then(function (response) {
+                        me.todoItemText = '';
+                        me.listTodo();
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
                 }
             },
             removeTodo (todo) {
-                this.items = this.items.filter(item => item !== todo)
+                let me = this;
+
+                axios.delete('/api/todos/'+ todo.id)
+                .then(function (response) {
+                     me.listTodo();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
             },
             toggleDone (todo) {
-                todo.done = !todo.done
+                let me = this;
+
+                axios.put('/api/todos/'+ todo.id, {
+                    done: !todo.done
+                })
+                .then(function (response) {
+                     me.listTodo();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
             }
         }
     }
