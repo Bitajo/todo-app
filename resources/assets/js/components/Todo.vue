@@ -1,27 +1,19 @@
 <template>
     <div class="container">
-        <div class="box">
-            <div class="field is-grouped">
-                <p class="control is-expanded">
-                    <input class="input" type="text" placeholder="Nuevo recordatorio" v-model="todoItemText">
-                </p>
-                <p class="control">
-                    <a class="button is-info" @click="addTodo">
-                        Agregar
-                    </a>
-                </p>
-            </div>
-        </div>
+        <todo-input @new="addTodo"></todo-input>
+      
         <table class="table is-bordered">
-            <tr v-for="(todo, index) in items" :key="index">
-                <td class="is-fullwidth" style="cursor: pointer" :class="{ 'is-done': todo.done }" @click="toggleDone(todo)">
-                    {{ todo.text }}
-                </td>
-                <td class="is-narrow">
-                    <a class="button is-danger is-small" @click="removeTodo(todo)">Eliminar</a>
-                </td>
-            </tr>
+            <todo-item 
+                v-for="(todo, index) in items" 
+                :key="index" 
+                :id="todo.id"
+                :text="todo.text" 
+                :done="todo.done"
+                @delete="removeTodo" 
+                @toggle="toggleDone">
+            </todo-item>
         </table>
+        
     </div>
 </template>
 
@@ -33,10 +25,17 @@
      * - En addTodo, removeTodo y toggleTodo deben hacer los cambios pertinentes para que las modificaciones,
      *   addiciones o elimicaiones tomen efecto en el backend asi como la base de datos.
      */
+
+import TodoInput from './TodoInput.vue';
+import TodoItem from './TodoItem.vue';
+
     export default {
+        components: {
+            TodoInput,
+            TodoItem
+        },
         data () {
             return {
-                todoItemText: '',
                 items: [],
             }
         },
@@ -50,32 +49,27 @@
                     list.items = response.data;
                 })
                 .catch(function (error) {
-                    // handle error
                     console.log(error);
                 });
             },
-            addTodo () {
+            addTodo(text){
                 let me = this;
-                let text = me.todoItemText.trim();
 
-                if (text !== '') {
-                    axios.post('/api/todos', {
-                        text: this.todoItemText,
+                axios.post('/api/todos', {
+                        text: text,
                         done: false
                     })
                     .then(function (response) {
-                        me.todoItemText = '';
                         me.listTodo();
                     })
                     .catch(function (error) {
                         console.log(error);
                     });
-                }
             },
-            removeTodo (todo) {
+            removeTodo(id){
                 let me = this;
 
-                axios.delete('/api/todos/'+ todo.id)
+                axios.delete('/api/todos/'+ id)
                 .then(function (response) {
                      me.listTodo();
                 })
@@ -83,7 +77,7 @@
                     console.log(error);
                 });
             },
-            toggleDone (todo) {
+            toggleDone: function(todo){
                 let me = this;
 
                 axios.put('/api/todos/'+ todo.id, {
@@ -95,7 +89,7 @@
                 .catch(function (error) {
                     console.log(error);
                 });
-            }
+            },
         }
     }
 </script>
