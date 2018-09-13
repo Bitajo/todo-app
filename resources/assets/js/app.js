@@ -8,6 +8,8 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
+import 'babel-polyfill';
+import { todoStore } from './store/todoStore';
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -17,5 +19,6 @@ window.Vue = require('vue');
 Vue.component('todo-component', require('./components/Todo.vue'));
 
 const app = new Vue({
-    el: '#app'
+    store: todoStore,
+    el: '#app',
 });

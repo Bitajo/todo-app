@@ -19,16 +19,18 @@
      */
     export default {
         props: {
+            id: Number,
             text: String, 
-            done: Boolean, 
-            id: Number
+            done: Boolean
         },
         methods: {
             removeTodo () {
-                this.$emit('delete', this.id);
+                this.$store.dispatch('removeTodo', this.id);
+                this.$store.dispatch('listTodo');
             },
             toggleDone () {
-                this.$emit('toggle', this.$props);          
+                this.$store.dispatch('toggleDone', this.$props);  
+                this.$store.dispatch('listTodo');        
             }
         }
     }

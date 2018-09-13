@@ -28,17 +28,13 @@
             }
         },
         mounted () {
-           //this.listTodo();
+           
         },
         methods: {
             addTodo () {
-                let me = this;
-                let text = me.todoItemText.trim();
-
-                if (text !== '') {
-                    me.$emit('new', me.todoItemText);
-                    me.todoItemText = '';
-                }
+                this.$store.dispatch('addTodo', this.todoItemText); 
+                this.todoItemText= '';
+                this.$store.dispatch('listTodo');
                 
             }
         }

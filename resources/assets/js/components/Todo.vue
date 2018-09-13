@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <todo-input @new="addTodo"></todo-input>
+        <todo-input></todo-input>
       
         <table class="table is-bordered">
             <todo-item 
@@ -8,9 +8,7 @@
                 :key="index" 
                 :id="todo.id"
                 :text="todo.text" 
-                :done="todo.done"
-                @delete="removeTodo" 
-                @toggle="toggleDone">
+                :done="todo.done">
             </todo-item>
         </table>
         
@@ -34,62 +32,16 @@ import TodoItem from './TodoItem.vue';
             TodoInput,
             TodoItem
         },
-        data () {
-            return {
-                items: [],
-            }
+        computed: {
+            items() {
+                return this.$store.state.items;
+            },
         },
         mounted () {
-           this.listTodo();
+            this.$store.dispatch('listTodo');
         },
         methods: {
-            listTodo(){
-                let list = this;
-                axios.get('/api/todos').then(function (response) {
-                    list.items = response.data;
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
-            },
-            addTodo(text){
-                let me = this;
-
-                axios.post('/api/todos', {
-                        text: text,
-                        done: false
-                    })
-                    .then(function (response) {
-                        me.listTodo();
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-            },
-            removeTodo(id){
-                let me = this;
-
-                axios.delete('/api/todos/'+ id)
-                .then(function (response) {
-                     me.listTodo();
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
-            },
-            toggleDone: function(todo){
-                let me = this;
-
-                axios.put('/api/todos/'+ todo.id, {
-                    done: !todo.done
-                })
-                .then(function (response) {
-                     me.listTodo();
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
-            },
+           
         }
     }
 </script>
